@@ -1,0 +1,53 @@
+version: "0.2.0"
+default_mode: reader
+orchestrator:
+  name: xianxiamaster
+  path: ../../SKILL.md
+skills:
+  - name: xianxia-context-compiler
+    stage: context
+    path: ../skills/xianxia-context-compiler/SKILL.md
+  - name: xianxia-arc-planner
+    stage: planning
+    path: ../skills/xianxia-arc-planner/SKILL.md
+  - name: xianxia-chapter-brief
+    stage: planning
+    path: ../skills/xianxia-chapter-brief/SKILL.md
+  - name: xianxia-prose-drafter
+    stage: drafting
+    path: ../skills/xianxia-prose-drafter/SKILL.md
+  - name: xianxia-dialogue-voice
+    stage: revision
+    path: ../skills/xianxia-dialogue-voice/SKILL.md
+  - name: xianxia-terminology-guard
+    stage: audit
+    path: ../skills/xianxia-terminology-guard/SKILL.md
+  - name: xianxia-progression-guard
+    stage: audit
+    path: ../skills/xianxia-progression-guard/SKILL.md
+  - name: xianxia-continuity-auditor
+    stage: audit
+    path: ../skills/xianxia-continuity-auditor/SKILL.md
+  - name: xianxia-reader-sim
+    stage: evaluation
+    path: ../skills/xianxia-reader-sim/SKILL.md
+  - name: xianxia-final-reviser
+    stage: revision
+    path: ../skills/xianxia-final-reviser/SKILL.md
+  - name: xianxia-state-committer
+    stage: commit
+    path: ../skills/xianxia-state-committer/SKILL.md
+hard_gate_order:
+  - spoiler_leak
+  - hard_preference
+  - terminology
+  - continuity
+  - progression
+  - timeline
+  - state_schema
+soft_gate_order:
+  - reader_pull
+  - character_voice
+  - pacing
+  - prose_naturalness
+  - repetition
