@@ -1,0 +1,63 @@
+name: Bootstrap XianxiaMaster
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/bootstrap-xianxiamaster.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reassemble and extract skill pack
+        shell: bash
+        run: |
+          cat .bootstrap/xianxiamaster-v0.2.zip.b64.part* > /tmp/xianxiamaster-v0.2.zip.b64
+          python - <<'PY'
+          from pathlib import Path
+          import base64
+          import zipfile
+
+          encoded = Path('/tmp/xianxiamaster-v0.2.zip.b64').read_text(encoding='utf-8')
+          archive = Path('/tmp/xianxiamaster-v0.2.zip')
+          archive.write_bytes(base64.b64decode(encoded))
+
+          with zipfile.ZipFile(archive) as package:
+              package.extractall('.')
+          PY
+
+      - name: Validate skill pack
+        shell: bash
+        run: |
+          python scripts/validate_skill_pack.py
+          python scripts/deterministic_checks.py --input tests/fixtures/chapter_good.json
+          if python scripts/deterministic_checks.py --input tests/fixtures/chapter_bad.json; then
+            echo 'Bad fixture unexpectedly passed.'
+            exit 1
+          fi
+
+      - name: Remove bootstrap artifacts
+        shell: bash
+        run: |
+          rm -rf .bootstrap
+          rm -f .github/workflows/bootstrap-xianxiamaster.yml
+
+      - name: Commit extracted files
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'feat: add XianxiaMaster narrative skill pack v0.2'
+          git push origin main
